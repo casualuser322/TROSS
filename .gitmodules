@@ -1,0 +1,6 @@
+[submodule "TROSS-recognition"]
+	path = TROSS-recognition
+	url = git@github.com:casualuser322/TROSS-recognition.git
+[submodule "TROSS-distance-counter"]
+	path = TROSS-distance-counter
+	url = git@github.com:casualuser322/TROSS-distance-counter.git
