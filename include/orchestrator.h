@@ -29,7 +29,6 @@ struct SpeechResult {
     float confidence;
 };
 
-// Thread-safe queue
 template<typename T>
 class ThreadSafeQueue {
 public:
@@ -61,7 +60,6 @@ private:
     std::condition_variable cv_;
 };
 
-// Interface for engines
 struct IEngine {
     virtual ~IEngine() = default;
 };
@@ -74,7 +72,6 @@ struct ISpeechEngine : IEngine {
     virtual std::vector<SpeechResult> process_audio(const std::vector<float>&) = 0;
 };
 
-// Orchestrator
 class Orchestrator {
 public:
     Orchestrator();
