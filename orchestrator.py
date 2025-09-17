@@ -5,8 +5,9 @@ from typing import Callable, Any
 
 class PyOrchestrator:
     def __init__(self):
-        # Загружаем C++ библиотеку
-        lib_path = os.path.join(os.path.dirname(__file__), "build", "liborchestrator.so")
+        lib_path = os.path.join(
+            os.path.dirname(__file__), "build", "liborchestrator.so"
+        )
         self.lib = ctypes.CDLL(lib_path)
 
         self.lib.create_orchestrator.restype = ctypes.c_void_p
@@ -48,14 +49,20 @@ class PyOrchestrator:
         )
 
     def set_detection_callback(self, callback: Callable[[Any], None]):
-        # Определяем C-тип callback
         CALLBACK_TYPE = ctypes.CFUNCTYPE(None, ctypes.c_void_p)
-        self._detection_cb = CALLBACK_TYPE(lambda result_ptr: callback(result_ptr))
+        self._detection_cb = CALLBACK_TYPE(
+            lambda result_ptr: callback(result_ptr)
+        )
         
-        # Передаем callback в C++ (если есть функция в bindings.cpp)
         if hasattr(self.lib, "set_detection_callback"):
-            self.lib.set_detection_callback.argtypes = [ctypes.c_void_p, CALLBACK_TYPE]
-            self.lib.set_detection_callback(self.orchestrator_ptr, self._detection_cb)
+            self.lib.set_detection_callback.argtypes = [
+                ctypes.c_void_p, 
+                CALLBACK_TYPE
+            ]
+            self.lib.set_detection_callback(
+                self.orchestrator_ptr, 
+                self._detection_cb
+            )
 
     def __del__(self):
         self.stop()
