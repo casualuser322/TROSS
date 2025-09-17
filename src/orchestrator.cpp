@@ -6,17 +6,49 @@
 #include <opencv2/imgproc.hpp>
 
 
-// Mock engines
 struct CVEngine : ICVEngine {
-    CVEngine(const std::string&) {}
-    std::vector<DetectionResult> process_frame(const cv::Mat&) override { return {}; }
+    cv::CascadeClassifier face_cascade;
+
+    CVEngine(const std::string& model_path) {
+        face_cascade.load(model_path);
+    }
+
+    std::vector<DetectionResult> process_frame(const cv::Mat& frame) override {
+        std::vector<DetectionResult> detections;
+
+        if (frame.empty()) return detections;
+
+        cv::Mat gray;
+        cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+        cv::equalizeHist(gray, gray);
+
+        std::vector<cv::Rect> faces;
+        face_cascade.detectMultiScale(gray, faces, 1.1, 5, 0, cv::Size(30, 30));
+
+        for (auto& f : faces) {
+            DetectionResult det;
+            det.object_class = "face";
+            det.confidence = 1.0f;
+            det.x = f.x;
+            det.y = f.y;
+            det.width = f.width;
+            det.height = f.height;
+            detections.push_back(det);
+        }
+
+        return detections;
+    }
 };
 
 struct SpeechEngine : ISpeechEngine {
     std::vector<SpeechResult> process_audio(const std::vector<float>&) override { return {}; }
 };
 
-inline float calculate_distance(const DetectionResult&) { return 0.0f; }
+inline float calculate_distance(const DetectionResult& det) {
+    float focal_length = 600.0f;
+    float real_face_width = 0.16f;
+    return (real_face_width * focal_length) / det.width;
+}
 
 Orchestrator::Orchestrator() {}
 Orchestrator::~Orchestrator() { stop(); }

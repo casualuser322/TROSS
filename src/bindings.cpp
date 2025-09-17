@@ -23,4 +23,25 @@ void push_frame(Orchestrator* o, unsigned char* data, int width, int height, int
     o->push_frame(frame);
 }
 
+struct CDetectionResult {
+    const char* object_class;
+    float confidence;
+    float x, y, width, height;
+};
+
+using DetectionCallback = void(*)(CDetectionResult);
+
+void set_detection_callback(Orchestrator* o, DetectionCallback cb) {
+    o->set_detection_callback([cb](const DetectionResult& det) {
+        CDetectionResult cdet;
+        cdet.object_class = det.object_class.c_str();
+        cdet.confidence = det.confidence;
+        cdet.x = det.x;
+        cdet.y = det.y;
+        cdet.width = det.width;
+        cdet.height = det.height;
+        cb(cdet);
+    });
+}
+
 }
