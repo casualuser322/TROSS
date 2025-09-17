@@ -3,6 +3,8 @@ import ctypes
 import numpy as np
 from typing import Callable, Any
 
+from types_ import DistanceResult, DetectionResult
+
 class PyOrchestrator:
     def __init__(self):
         lib_path = os.path.join(
@@ -49,7 +51,10 @@ class PyOrchestrator:
         )
 
     def set_detection_callback(self, callback: Callable[[Any], None]):
-        CALLBACK_TYPE = ctypes.CFUNCTYPE(None, ctypes.c_void_p)
+        CALLBACK_TYPE = ctypes.CFUNCTYPE(
+            None, 
+            ctypes.POINTER(DetectionResult)
+        )
         self._detection_cb = CALLBACK_TYPE(
             lambda result_ptr: callback(result_ptr)
         )
@@ -62,6 +67,25 @@ class PyOrchestrator:
             self.lib.set_detection_callback(
                 self.orchestrator_ptr, 
                 self._detection_cb
+            )
+    
+    def set_distance_callback(self, callback: Callable[[DistanceResult], None]):
+        CALLBACK_TYPE = ctypes.CFUNCTYPE(
+            None, 
+            ctypes.POINTER(DistanceResult)
+        )
+        self._distance_cb = CALLBACK_TYPE(
+            lambda result_ptr: callback(result_ptr.contents)
+        )
+
+        if hasattr(self.lib, "set_distance_callback"):
+            self.lib.set_distance_callback.argtypes = [
+                ctypes.c_void_p,
+                CALLBACK_TYPE
+            ]
+            self.lib.set_distance_callback(
+                self.orchestrator_ptr,
+                self._distance_cb
             )
 
     def __del__(self):
