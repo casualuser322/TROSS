@@ -76,6 +76,7 @@ pyrightconfig.json
 *.bak
 *.tmp
 
-# Parsec temp build (если у тебя кастомные сборки или кеши)
+# Parsec temp build
 build/
 dist/
+__pycache__/

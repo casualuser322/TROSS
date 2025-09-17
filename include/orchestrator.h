@@ -8,13 +8,10 @@
 #include <queue>
 #include <thread>
 #include <vector>
+#include <string>
 
 #include <opencv2/core.hpp>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/highgui.hpp>
 
-
-//modules for intermodule interaction
 struct DetectionResult {
     std::string object_class;
     float confidence;
@@ -32,8 +29,52 @@ struct SpeechResult {
     float confidence;
 };
 
+// Thread-safe queue
+template<typename T>
+class ThreadSafeQueue {
+public:
+    void push(T item) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        queue_.push(std::move(item));
+        cv_.notify_one();
+    }
 
-//Orchestrator
+    bool try_pop(T& item) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        if (queue_.empty()) return false;
+        item = std::move(queue_.front());
+        queue_.pop();
+        return true;
+    }
+
+    T wait_and_pop() {
+        std::unique_lock<std::mutex> lock(mutex_);
+        cv_.wait(lock, [this]() { return !queue_.empty(); });
+        T item = std::move(queue_.front());
+        queue_.pop();
+        return item;
+    }
+
+private:
+    std::queue<T> queue_;
+    std::mutex mutex_;
+    std::condition_variable cv_;
+};
+
+// Interface for engines
+struct IEngine {
+    virtual ~IEngine() = default;
+};
+
+struct ICVEngine : IEngine {
+    virtual std::vector<DetectionResult> process_frame(const cv::Mat&) = 0;
+};
+
+struct ISpeechEngine : IEngine {
+    virtual std::vector<SpeechResult> process_audio(const std::vector<float>&) = 0;
+};
+
+// Orchestrator
 class Orchestrator {
 public:
     Orchestrator();
@@ -42,11 +83,9 @@ public:
     void start();
     void stop();
 
-    //module interaction
     void push_frame(const cv::Mat& frame);
     void push_audio(const std::vector<float>& audio_data);
 
-    //Callbacks for results
     void set_detection_callback(std::function<void(const DetectionResult&)> callback);
     void set_distance_callback(std::function<void(const DistanceResult&)> callback);
     void set_speech_callback(std::function<void(const SpeechResult&)> callback);
@@ -54,31 +93,23 @@ public:
 private:
     void cv_thread_func();
     void distance_thread_func();
-    void decision_thread_func(); //everything is correct here
+    void decision_thread_func();
     void speech_thread_func();
 
-    //Q
-    std::queue<cv::Mat> frame_queue;
-    std::queue<std::vector<float>> audio_queue;
-    std::queue<DetectionResult>    detection_queue;
-    std::queue<DistanceResult>     distance_result;
-    std::queue<SpeechResult>       speech_queue;
+    ThreadSafeQueue<cv::Mat> frame_queue;
+    ThreadSafeQueue<std::vector<float>> audio_queue;
+    ThreadSafeQueue<DetectionResult> detection_queue;
+    ThreadSafeQueue<DistanceResult> distance_queue;
+    ThreadSafeQueue<SpeechResult> speech_queue;
 
-    //Sync
-    std::mutex frame_mutex, audio_mutex, detection_mutex, distance_mutex, speech_mutex;
-    std::condition_variable frame_cova, audio_cova, detection_cova, distance_cova, speech_cova;
-
-    //Threads
     std::thread cv_thread;
     std::thread detection_thread;
     std::thread distance_thread;
     std::thread speech_thread;
 
-    //Flags
     std::atomic<bool> running{false};
-    
-    //Callbacks
+
     std::function<void(const DetectionResult&)> detection_callback;
-    std::function<void(const DistanceResult&)>  distance_callback;
-    std::function<void(const SpeechResult&)>    speech_callback;
+    std::function<void(const DistanceResult&)> distance_callback;
+    std::function<void(const SpeechResult&)> speech_callback;
 };
