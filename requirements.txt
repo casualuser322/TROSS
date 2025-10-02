@@ -1,3 +1,6 @@
 numpy
 opencv-python-headless
 pyqt5
+torch
+torchvision
+tqdm
