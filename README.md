@@ -47,14 +47,20 @@ Each camera is modeled by the pinhole projection:
 $$
 s
 \begin{bmatrix}
-u \\ v \\ 1
+u \\
+v \\
+1
 \end{bmatrix}
 =
 K [R \ | \ T]
 \begin{bmatrix}
-X \\ Y \\ Z \\ 1
+X \\
+Y \\
+Z \\
+1
 \end{bmatrix}
 $$
+
 
 where  
 - \( K \) is the intrinsic matrix  
