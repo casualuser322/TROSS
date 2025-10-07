@@ -37,7 +37,7 @@ pip install torch torchvision opencv-python numpy tqdm
 
 ## Stereo calibration
 
-Stereo calibration estimates the intrinsic matrices \( K_l, K_r \), distortion coefficients \( D_l, D_r \), and the extrinsic parameters (rotation \( R \), translation \( T \)) between two cameras.
+Stereo calibration estimates the intrinsic matrices $K_l, K_r$, distortion coefficients $D_l, D_r$, and the extrinsic parameters $\rotation \( R \), translation \( T \)$ between two cameras.
 
 Given sets of corresponding points in the left and right images of a known calibration pattern, it computes these parameters via nonlinear optimization, minimizing the reprojection error of the 3D points onto the image planes.
 
