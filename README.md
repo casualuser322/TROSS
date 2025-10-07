@@ -44,7 +44,7 @@ Given sets of corresponding points in the left and right images of a known calib
 
 Each camera is modeled by the pinhole projection:
 
-$ s \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = K [R \ | \ T] \begin{bmatrix} X \\ Y \\ Z \\ 1 \end{bmatrix} $
+$$\left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right)$$
 
 where  
 - \( K \) is the intrinsic matrix  
