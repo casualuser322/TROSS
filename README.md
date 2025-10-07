@@ -60,7 +60,7 @@ where
 - \( K \) is the intrinsic matrix  
 - \( R, T \) are the rotation and translation from world to camera coordinates  
 - \( (X, Y, Z) \) are 3D points in world space  
-- \( (u, v) \) are pixel coordinates  
+- \( (u, v) \) are pixel coordinates
 
 Stereo calibration produces a rectified coordinate system such that corresponding epipolar lines are aligned horizontally. Depth can then be recovered from disparity \( d = x_l - x_r \) via:
 
