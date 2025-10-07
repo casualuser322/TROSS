@@ -37,7 +37,7 @@ pip install torch torchvision opencv-python numpy tqdm
 
 ## Stereo calibration
 
-Stereo calibration estimates the intrinsic matrices $K_l, K_r$, distortion coefficients $D_l, D_r$, and the extrinsic parameters $\rotation \( R \), translation \( T \)$ between two cameras.
+Stereo calibration estimates the intrinsic matrices $K_l, K_r$, distortion coefficients $D_l, D_r$, and the extrinsic parameters $\text{rotation } R, \text{ translation } T$ between two cameras.
 
 Given sets of corresponding points in the left and right images of a known calibration pattern, it computes these parameters via nonlinear optimization, minimizing the reprojection error of the 3D points onto the image planes.
 
@@ -125,9 +125,10 @@ This penalizes multiplicative depth errors rather than additive, emphasizing rel
 
 After each validation epoch, the following standard metrics are computed:
 
+
 | Metric | Formula |
 |--------|---------|
-| **AbsRel** | $$ \frac{1}{N} \sum_i \frac{\|D_i - \hat{D}_i\|}{D_i} $$ |
+| **AbsRel** | $ \frac{1}{N} \sum_i \frac{\|D_i - \hat{D}_i\|}{D_i} $ |
 | **RMSE** | $ \sqrt{\frac{1}{N} \sum_i (D_i - \hat{D}_i)^2} $ |
 | **RMSE_log** | $ \sqrt{\frac{1}{N} \sum_i (\log D_i - \log \hat{D}_i)^2} $ |
 | **δ₁, δ₂, δ₃** | Fraction of pixels s.t. $ \max(\frac{D_i}{\hat{D}_i}, \frac{\hat{D}_i}{D_i}) < 1.25^t $, for $ t = 1, 2, 3 $ |
