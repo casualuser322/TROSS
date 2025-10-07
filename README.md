@@ -114,11 +114,11 @@ The final layer produces a single-channel depth prediction (not explicitly const
 
 Training minimizes a masked logarithmic L1 loss:
 
-\[
+$$
 L = \frac{1}{N} \sum_{i \in M} \left| \log(\hat{D}_i + \epsilon) - \log(D_i + \epsilon) \right|
-\]
+$$
 
-where \( M \) is the valid pixel mask and \( \epsilon = 10^{-6} \).  
+where $M$ is the valid pixel mask and $\epsilon = 10^{-6}$.  
 This penalizes multiplicative depth errors rather than additive, emphasizing relative accuracy.
 
 ### Metrics
@@ -126,11 +126,11 @@ This penalizes multiplicative depth errors rather than additive, emphasizing rel
 After each validation epoch, the following standard metrics are computed:
 
 | Metric | Formula |
-|---------|----------|
-| **AbsRel** | \( \frac{1}{N} \sum_i \frac{|D_i - \hat{D}_i|}{D_i} \) |
-| **RMSE** | \( \sqrt{\frac{1}{N} \sum_i (D_i - \hat{D}_i)^2} \) |
-| **RMSE_log** | \( \sqrt{\frac{1}{N} \sum_i (\log D_i - \log \hat{D}_i)^2} \) |
-| **δ₁, δ₂, δ₃** | Fraction of pixels s.t. \( \max(\frac{D_i}{\hat{D}_i}, \frac{\hat{D}_i}{D_i}) < 1.25^t \), for \( t = 1, 2, 3 \) |
+|--------|---------|
+| **AbsRel** | $ \frac{1}{N} \sum_i \frac{\|D_i - \hat{D}_i\|}{D_i} $ |
+| **RMSE** | $ \sqrt{\frac{1}{N} \sum_i (D_i - \hat{D}_i)^2} $ |
+| **RMSE_log** | $ \sqrt{\frac{1}{N} \sum_i (\log D_i - \log \hat{D}_i)^2} $ |
+| **δ₁, δ₂, δ₃** | Fraction of pixels s.t. $ \max(\frac{D_i}{\hat{D}_i}, \frac{\hat{D}_i}{D_i}) < 1.25^t $, for $ t = 1, 2, 3 $ |
 
 
 
@@ -193,7 +193,7 @@ Each checkpoint includes:
 - Training time scales approximately linearly with dataset size and resolution.  
 - GPU acceleration (CUDA) is automatically used if available.  
 - Depth predictions are not guaranteed to be metrically accurate unless trained on physically calibrated depth data.  
-- The stereo baseline \( B \) and focal length \( f \) from calibration can be used to convert disparity maps to metric depth for ground truth supervision.
+- The stereo baseline $B$ and focal length $f$ from calibration can be used to convert disparity maps to metric depth for ground truth supervision.
 
 
 ## TODO
