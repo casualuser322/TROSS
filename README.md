@@ -44,21 +44,21 @@ Given sets of corresponding points in the left and right images of a known calib
 
 Each camera is modeled by the pinhole projection:
 
-$$\left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right)$$
+$$ \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = K \begin{bmatrix} R & T \end{bmatrix} \begin{bmatrix} X \\ Y \\ Z \\ 1 \end{bmatrix} $$
 
 where  
-- \( K \) is the intrinsic matrix  
-- \( R, T \) are the rotation and translation from world to camera coordinates  
-- \( (X, Y, Z) \) are 3D points in world space  
-- \( (u, v) \) are pixel coordinates
+- $K$ is the intrinsic matrix  
+- $R$, $T$ are the rotation and translation from world to camera coordinates  
+- $(X, Y, Z)$ are 3D points in world space  
+- $(u, v)$ are pixel coordinates
 
-Stereo calibration produces a rectified coordinate system such that corresponding epipolar lines are aligned horizontally. Depth can then be recovered from disparity \( d = x_l - x_r \) via:
+Stereo calibration produces a rectified coordinate system such that corresponding epipolar lines are aligned horizontally. Depth can then be recovered from disparity $d = x_l - x_r$ via:
 
-\[
+$$
 Z = \frac{f \cdot B}{d}
-\]
+$$
 
-where \( f \) is the focal length and \( B \) is the baseline distance between the two cameras.
+where $f$ is the focal length and $B$ is the baseline distance between the two cameras.
 
 ### Usage
 
