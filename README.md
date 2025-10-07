@@ -45,7 +45,17 @@ Given sets of corresponding points in the left and right images of a known calib
 Each camera is modeled by the pinhole projection:
 
 \[
-s \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = K [R \ | \ T] \begin{bmatrix} X \\ Y \\ Z \\ 1 \end{bmatrix}
+$$
+s
+\begin{bmatrix}
+u \\ v \\ 1
+\end{bmatrix}
+=
+K [R \ | \ T]
+\begin{bmatrix}
+X \\ Y \\ Z \\ 1
+\end{bmatrix}
+$$
 \]
 
 where  
