@@ -37,30 +37,28 @@ pip install torch torchvision opencv-python numpy tqdm
 
 ## Stereo calibration
 
-Stereo calibration estimates the intrinsic matrices \( K_l, K_r \), distortion coefficients \( D_l, D_r \), and the extrinsic parameters (rotation \( R \), translation \( T \)) between two cameras.
+Stereo calibration estimates the intrinsic matrices $K_l, K_r$, distortion coefficients $D_l, D_r$, and the extrinsic parameters $\text{rotation } R, \text{ translation } T$ between two cameras.
 
 Given sets of corresponding points in the left and right images of a known calibration pattern, it computes these parameters via nonlinear optimization, minimizing the reprojection error of the 3D points onto the image planes.
 
 
 Each camera is modeled by the pinhole projection:
 
-\[
-s \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = K [R \ | \ T] \begin{bmatrix} X \\ Y \\ Z \\ 1 \end{bmatrix}
-\]
+$$ \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = K \begin{bmatrix} R & T \end{bmatrix} \begin{bmatrix} X \\ Y \\ Z \\ 1 \end{bmatrix} $$
 
 where  
-- \( K \) is the intrinsic matrix  
-- \( R, T \) are the rotation and translation from world to camera coordinates  
-- \( (X, Y, Z) \) are 3D points in world space  
-- \( (u, v) \) are pixel coordinates  
+- $K$ is the intrinsic matrix  
+- $R$, $T$ are the rotation and translation from world to camera coordinates  
+- $(X, Y, Z)$ are 3D points in world space  
+- $(u, v)$ are pixel coordinates
 
-Stereo calibration produces a rectified coordinate system such that corresponding epipolar lines are aligned horizontally. Depth can then be recovered from disparity \( d = x_l - x_r \) via:
+Stereo calibration produces a rectified coordinate system such that corresponding epipolar lines are aligned horizontally. Depth can then be recovered from disparity $d = x_l - x_r$ via:
 
-\[
+$$
 Z = \frac{f \cdot B}{d}
-\]
+$$
 
-where \( f \) is the focal length and \( B \) is the baseline distance between the two cameras.
+where $f$ is the focal length and $B$ is the baseline distance between the two cameras.
 
 ### Usage
 
@@ -116,23 +114,24 @@ The final layer produces a single-channel depth prediction (not explicitly const
 
 Training minimizes a masked logarithmic L1 loss:
 
-\[
+$$
 L = \frac{1}{N} \sum_{i \in M} \left| \log(\hat{D}_i + \epsilon) - \log(D_i + \epsilon) \right|
-\]
+$$
 
-where \( M \) is the valid pixel mask and \( \epsilon = 10^{-6} \).  
+where $M$ is the valid pixel mask and $\epsilon = 10^{-6}$.  
 This penalizes multiplicative depth errors rather than additive, emphasizing relative accuracy.
 
 ### Metrics
 
 After each validation epoch, the following standard metrics are computed:
 
+
 | Metric | Formula |
-|---------|----------|
-| **AbsRel** | \( \frac{1}{N} \sum_i \frac{|D_i - \hat{D}_i|}{D_i} \) |
-| **RMSE** | \( \sqrt{\frac{1}{N} \sum_i (D_i - \hat{D}_i)^2} \) |
-| **RMSE_log** | \( \sqrt{\frac{1}{N} \sum_i (\log D_i - \log \hat{D}_i)^2} \) |
-| **δ₁, δ₂, δ₃** | Fraction of pixels s.t. \( \max(\frac{D_i}{\hat{D}_i}, \frac{\hat{D}_i}{D_i}) < 1.25^t \), for \( t = 1, 2, 3 \) |
+|--------|---------|
+| **AbsRel** | $ \frac{1}{N} \sum_i \frac{\|D_i - \hat{D}_i\|}{D_i} $ |
+| **RMSE** | $ \sqrt{\frac{1}{N} \sum_i (D_i - \hat{D}_i)^2} $ |
+| **RMSE_log** | $ \sqrt{\frac{1}{N} \sum_i (\log D_i - \log \hat{D}_i)^2} $ |
+| **δ₁, δ₂, δ₃** | Fraction of pixels s.t. $ \max(\frac{D_i}{\hat{D}_i}, \frac{\hat{D}_i}{D_i}) < 1.25^t $, for $ t = 1, 2, 3 $ |
 
 
 
@@ -195,7 +194,7 @@ Each checkpoint includes:
 - Training time scales approximately linearly with dataset size and resolution.  
 - GPU acceleration (CUDA) is automatically used if available.  
 - Depth predictions are not guaranteed to be metrically accurate unless trained on physically calibrated depth data.  
-- The stereo baseline \( B \) and focal length \( f \) from calibration can be used to convert disparity maps to metric depth for ground truth supervision.
+- The stereo baseline $B$ and focal length $f$ from calibration can be used to convert disparity maps to metric depth for ground truth supervision.
 
 
 ## TODO
